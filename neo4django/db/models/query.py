@@ -2,7 +2,11 @@ from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.db.models.sql import subqueries
 from django.core import exceptions
-from django.db.models.loading import get_model
+try:
+    from django.db.models.loading import get_model
+except ImportError:
+    from django.apps import apps
+    get_model = apps.get_model
 from django.utils.datastructures import SortedDict
 
 from lucenequerybuilder import Q as LQ
