@@ -7,7 +7,7 @@ try:
 except ImportError:
     from django.apps import apps
     get_model = apps.get_model
-from django.utils.datastructures import SortedDict
+from collections import OrderedDict as SortedDict
 
 from lucenequerybuilder import Q as LQ
 
