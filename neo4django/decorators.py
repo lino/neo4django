@@ -94,8 +94,12 @@ def borrows_methods(target_cls, method_names):
     find it has a bit too much baggage.
     """
     def wrapped(cls):
-        for method_name in set(method_names):
-            target_method = getattr(target_cls, method_name)
+        #Workaround to make it work w/ Django 1.9
+        try:
+            for method_name in set(method_names):
+                target_method = getattr(target_cls, method_name)
             setattr(cls, method_name, target_method.im_func)
+        except:
+            pass
         return cls
     return wrapped
