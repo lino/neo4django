@@ -3,4 +3,4 @@ decorator>=3.3.1
 python-dateutil==1.5
 lucene-querybuilder>=0.1.6
 neo4jrestclient==1.9.0
-Django==1.11.2
+django==1.11.2

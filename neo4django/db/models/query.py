@@ -1,6 +1,6 @@
 from django.db.models import Q
 from django.db.models.query import QuerySet
-from django.db.models.sql import subqueries, DateQuery
+from django.db.models.sql import subqueries
 from django.core import exceptions
 from functools import reduce
 try:
