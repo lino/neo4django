@@ -26,8 +26,8 @@ from neo4django.constants import ERROR_ATTR
 MIN_INT = -9223372036854775808
 MAX_INT = 9223372036854775807
 
-FIELD_PASSTHROUGH_METHODS = ('formfield','get_flatchoices','_get_flatchoices',
-                             'set_attributes_from_name', )
+FIELD_PASSTHROUGH_METHODS = ('formfield',
+                             'set_attributes_from_name' )
 
 
 @borrows_methods(fields.Field, FIELD_PASSTHROUGH_METHODS)
@@ -96,10 +96,6 @@ class Property(object):
     @property
     def default(self):
         self.get_default()
-
-    @property
-    def flatchoices(self):
-        return self._get_flatchoices()
 
     def get_attname_column(self):
         return (self.name, None)
@@ -298,7 +294,6 @@ class BoundProperty(AttrRouter):
                      'unique_for_month',
                      'unique_for_year',
                      'verbose_name',
-                     'flatchoices',
                      ], self._property)
 
         self.__class = cls
