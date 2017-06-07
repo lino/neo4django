@@ -45,7 +45,7 @@ def sliding_pair(seq):
     """
     s1, s2 = itertools.tee(seq)
     s2.next()  # This ensures we get a None sentinel for the end of the iterator
-    return itertools.izip_longest(s1, s2)
+    return itertools.zip_longest(s1, s2)
 
 
 def uniqify(seq):
