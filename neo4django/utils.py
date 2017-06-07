@@ -300,6 +300,8 @@ class AttrRouter(object):
         attribute of the class is returned
         """
         target = self._router['get'].get(name, super(AttrRouter, self))
+        print(target)
+        print(name)
         return getattr(target, name)
 
     def __setattr__(self, name, value):
