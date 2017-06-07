@@ -194,7 +194,7 @@ class Property(object):
         for v in self.validators:
             try:
                 v(value)
-            except exceptions.ValidationError, e:
+            except exceptions.ValidationError as e:
                 if hasattr(e, 'code') and e.code in self.error_messages:
                     message = self.error_messages[e.code]
                     if e.params:
@@ -321,7 +321,7 @@ class BoundProperty(AttrRouter):
         return type(self._property)
 
     def __cmp__(self, other):
-        return cmp(self.creation_counter, other.creation_counter)
+        return (self.creation_counter > other.creation_counter) - (self.creation_counter < other.creation_counter)
 
     @staticmethod
     def _values_of(instance, create=True):
