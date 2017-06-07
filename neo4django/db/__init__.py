@@ -74,18 +74,18 @@ if getattr(_settings, 'NEO4DJANGO_PROFILE_REQUESTS', False):
         from sys import stdout
         new_time = _time()
         time_diff_between_calls = new_time - profiling_data['last_print_time']
-        print "after %0.3f seconds..." % time_diff_between_calls
+        print("after %0.3f seconds..." % time_diff_between_calls)
         profiling_data['last_print_time'] = new_time
-        print "{0} {1}".format(method.upper(), url)
-        if isinstance(data, (dict, basestring, int)):
-            print data
+        print("{0} {1}".format(method.upper(), url))
+        if isinstance(data, (dict, (str,bytes), int)):
+            print(data)
         else:
-            print [d.items() for d in data]
+            print([d.items() for d in data])
         stdout.flush()
 
     def stop_timer(*args):
         time_diff = _time() - profiling_data['last_print_time']
-        print "took %0.3f seconds..." % time_diff
+        print("took %0.3f seconds..." % time_diff)
 
     _client.Request.register_pre_request_callback(start_timer)
     _client.Request.register_post_request_callback(stop_timer)
