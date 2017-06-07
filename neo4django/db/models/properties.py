@@ -7,7 +7,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models import fields
 from django.db.models.fields import NOT_PROVIDED
 from django.core import exceptions, validators
-from django.utils.encoding import force_unicode
 from django.utils import timezone, datetime_safe
 from django.forms import fields as formfields
 from django.conf import settings
@@ -114,7 +113,7 @@ class Property(object):
         if self.has_default():
             if callable(self._default):
                 return self._default()
-            return force_unicode(self._default, strings_only=True)
+            return self._default
         return None
 
     def to_neo(self, value):
@@ -534,7 +533,7 @@ class StringProperty(Property):
             self.validators.append(validators.MinLengthValidator(min_length))
 
     def to_neo(cls, value):
-        return unicode(value)
+        return str(value)
 
     def formfield(self, **kwargs):
         defaults = dict(kwargs)
@@ -673,7 +672,7 @@ class DateProperty(Property):
         elif isinstance(value, datetime.date):
             return value.isoformat()
         else:
-            return unicode(value)
+            return str(value)
 
     def pre_save(self, model_instance, add, attname):
         if self.auto_now or (self.auto_now_add and add):
