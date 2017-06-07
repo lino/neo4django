@@ -86,7 +86,7 @@ def Enum(*enums, **other_enums):
     numerical_items = itertools.starmap(lambda i, v: (str(v).upper(), i), enumerate(enums))
 
     # Handle keyword arguments
-    keyword_items = itertools.starmap(lambda k, v: (str(k).upper(), v), other_enums.iteritems())
+    keyword_items = itertools.starmap(lambda k, v: (str(k).upper(), v), iter(other_enums.items()))
 
     # Chain all items
     all_items = itertools.chain(numerical_items, keyword_items)
