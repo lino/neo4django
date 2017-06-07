@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models.query import EmptyQuerySet
 
 from neo4django.decorators import not_implemented
-from query import NodeQuerySet
+from .query import NodeQuerySet
 
 
 class NodeModelManager(models.Manager):
