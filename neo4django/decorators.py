@@ -99,7 +99,8 @@ def borrows_methods(target_cls, method_names):
             for method_name in set(method_names):
                 target_method = getattr(target_cls, method_name)
             setattr(cls, method_name, target_method)
-        except:
+        except Exception as e:
+            print(e)
             pass
         return cls
     return wrapped
