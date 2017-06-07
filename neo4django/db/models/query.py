@@ -1,7 +1,8 @@
 from django.db.models import Q
 from django.db.models.query import QuerySet
-from django.db.models.sql import subqueries
+from django.db.models.sql import subqueries, DateQuery
 from django.core import exceptions
+from functools import reduce
 try:
     from django.db.models.loading import get_model
 except ImportError:
@@ -392,21 +393,21 @@ def cypher_predicate_from_condition(element_name, condition):
                 'The year operator is only valid against date-based '
                 'properties.')
         cypher = ("SUBSTRING(%s, 0, 4) = %s" %
-                  (element_name, cypher_primitive(unicode(value).zfill(4))))
+                  (element_name, cypher_primitive(str(value).zfill(4))))
     elif condition.operator is OPERATORS.MONTH:
         if not isinstance(field._property, (DateProperty, DateTimeProperty)):
             raise exceptions.ValidationError(
                 'The month operator is only valid against date-based '
                 'properties.')
         cypher = ("SUBSTRING(%s, 5, 2) = %s" %
-                  (element_name, cypher_primitive(unicode(value).zfill(2))))
+                  (element_name, cypher_primitive(str(value).zfill(2))))
     elif condition.operator is OPERATORS.DAY:
         if not isinstance(field._property, (DateProperty, DateTimeProperty)):
             raise exceptions.ValidationError(
                 'The day operator is only valid against date-based '
                 'properties.')
         cypher = ("SUBSTRING(%s, 8, 2) = %s" %
-                  (element_name, cypher_primitive(unicode(value).zfill(2))))
+                  (element_name, cypher_primitive(str(value).zfill(2))))
     elif condition.operator is OPERATORS.ISNULL:
         if not isinstance(field._property, BoundRelationship):
             cypher = 'HAS(%s)' % re.sub(r'(\?|\!)$', '', element_name)
@@ -499,7 +500,7 @@ def cypher_from_fields(nodetype, fields):
 
         node_match_components = []  # Cypher node identifiers
         type_matches = []  # full Cypher type matching paths for return types
-        for ri in xrange(len(rel_match_components)):
+        for ri in range(len(rel_match_components)):
             return_node_name = '%s_r%d' % (path_name, ri)
             return_node_type_name = '%s_t' % return_node_name
 
@@ -826,7 +827,7 @@ class Query(object):
                                is_summary=is_summary)
 
     def add_related_update(self, model, field, value):
-        raise FieldError('Cannot update model field %s - only non-relations are'
+        raise exceptions.FieldError('Cannot update model field %s - only non-relations are'
                          ' permitted.' % field)
 
     def add_with(self, field_dict, **kwargs):
@@ -928,7 +929,7 @@ class Query(object):
             else:
                 index_qs_dict[key] = val
 
-        index_qs = [(key, unicode(val)) for key, val in index_qs_dict.iteritems()
+        index_qs = [(key, str(val)) for key, val in index_qs_dict.iteritems()
                     if val is not None]
         
         # use index lookups, ids, OR a type tree traversal as a cypher START,
@@ -1150,7 +1151,7 @@ class Query(object):
             prior_complex_clause = ([start_clause] + with_clauses)[-1]
             passing_ids = getattr(prior_complex_clause, 'passing_identifiers', ['n'])
             with_clauses.append(With(dict((i, i) for i in passing_ids),
-                    where='WHERE ' + unicode(type_restriction_pattern)))
+                    where='WHERE ' + str(type_restriction_pattern)))
 
         if self.limit_before_return:
             # TODO DRY violation
@@ -1203,7 +1204,7 @@ class Query(object):
 
     def update(self, using, updates):
         if 'id' in updates or 'pk' in updates:
-            raise FieldError("Neo4j doesn't allow node ids to be updated.")
+            raise exceptions.FieldError("Neo4j doesn't allow node ids to be updated.")
         clone = self.clone()
         clone.add_update_values(updates)
         for m in clone.execute(using):
@@ -1258,7 +1259,7 @@ class NodeQuerySet(QuerySet):
         Otherwise, iterate over the queryset, loading items into the cache
         one by one, and return last element of the cache.
         """
-        if not isinstance(k, (int, long)) or (k < 0) or \
+        if not isinstance(k, int) or (k < 0) or \
            self._result_cache is not None:
             return super(NodeQuerySet, self).__getitem__(k)
         try:
@@ -1269,7 +1270,7 @@ class NodeQuerySet(QuerySet):
                 self._result_cache.append(next(self._iter))
             return self._result_cache[-1]
 
-        except self.model.DoesNotExist, e:
+        except self.model.DoesNotExist as e:
             raise IndexError(e.args)
 
     def __contains__(self, value):
@@ -1307,7 +1308,7 @@ class NodeQuerySet(QuerySet):
     @transactional
     def create(self, **kwargs):
         if 'id' in kwargs or 'pk' in kwargs:
-            raise FieldError("Neo4j doesn't allow node ids to be assigned.")
+            raise exceptions.FieldError("Neo4j doesn't allow node ids to be assigned.")
         return super(NodeQuerySet, self).create(**kwargs)
 
     #TODO would be awesome if this were transactional
@@ -1445,7 +1446,7 @@ class NodeDateQuerySet(NodeQuerySet):
         instance.
         """
         self.query.clear_deferred_loading()
-        self.query = self.query.clone(klass=sql.DateQuery, setup=True)
+        self.query = self.query.clone(klass=DateQuery, setup=True)
         self.query.select = []
         self.query.add_date_select(self._field_name, self._kind, self._order)
 

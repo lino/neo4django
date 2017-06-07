@@ -1,9 +1,10 @@
 from operator import itemgetter, add
-from itertools import izip_longest, chain, ifilter
+from itertools import zip_longest, chain
+from functools import reduce
 
 
 def id_from_url(url):
-    from urlparse import urlsplit
+    from urllib.parse import urlsplit
     from posixpath import dirname, basename
     path = urlsplit(url).path
     b = basename(path)
@@ -21,7 +22,7 @@ def itemdropper(*ind):
     keys, due to complexity.
     """
     def func(seq):
-        return reduce(add, (seq[i:i + 1] for i in xrange(len(seq)) if i not in ind))
+        return reduce(add, (seq[i:i + 1] for i in range(len(seq)) if i not in ind))
     return func
 
 
@@ -34,7 +35,7 @@ class Neo4jTable(object):
         if column_name_pred is None:
             column_name_pred = lambda s: s
         elif not callable(column_name_pred):
-            if isinstance(column_name_pred, basestring):
+            if isinstance(column_name_pred, (str,bytes)):
                 column_name = column_name_pred
                 column_name_pred = lambda s: s == column_name
             else:
@@ -68,11 +69,11 @@ class Neo4jTable(object):
                              ' as existing columns.')
         self.column_names = self.column_names + [column_name]
         self.data = [list(r) + [new_element] for r, new_element in
-                     izip_longest(self.data, column_rows)]
+                     zip_longest(self.data, column_rows)]
 
     def to_dicts(self):
         def to_dict(row):
-            return dict(izip_longest(self.column_names, row))
+            return dict(zip_longest(self.column_names, row))
         return [to_dict(r) for r in self.data]
 
     def __len__(self):
@@ -82,4 +83,4 @@ class Neo4jTable(object):
 def prettify_path(path_dict):
     nodes = ['(%d)' % id_from_url(url) for url in path_dict['nodes']]
     rels = ['[%d]' % id_from_url(url) for url in path_dict['relationships']]
-    return '->'.join(ifilter(None, chain.from_iterable(izip_longest(nodes, rels))))
+    return '->'.join(filter(None, chain.from_iterable(zip_longest(nodes, rels))))
