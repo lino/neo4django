@@ -1,4 +1,4 @@
-from urlparse import urlparse
+from urllib.parse import urlparse
 from neo4jrestclient.client import GraphDatabase, RAW as RETURNS_RAW
 from neo4jrestclient.request import Request
 from django.conf import settings as _settings
