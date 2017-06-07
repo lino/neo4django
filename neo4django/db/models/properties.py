@@ -729,7 +729,7 @@ class ArrayProperty(Property):
 
     default_validators = [validate_array]
 
-    member_to_neo_index = Property.to_neo_index.__func__
+    member_to_neo_index = Property.to_neo_index
 
     def __init__(self, *args, **kwargs):
         """
@@ -810,7 +810,7 @@ class IntArrayProperty(ArrayProperty):
     _internal_type_ = 'IntArrayProperty'
     default_validators = [validate_int_array]
 
-    member_to_neo_index = IntegerProperty.to_neo_index.im_func
+    member_to_neo_index = IntegerProperty.to_neo_index
 
 
 class BooleanProperty(Property):
