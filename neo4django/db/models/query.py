@@ -1434,26 +1434,3 @@ class NodeQuerySet(QuerySet):
     @not_supported
     def _as_sql(self, connection):
         pass
-
-
-class NodeDateQuerySet(NodeQuerySet):
-
-    def _setup_query(self):
-        """
-        Sets up any special features of the query attribute.
-
-        Called by the _clone() method after initializing the rest of the
-        instance.
-        """
-        self.query.clear_deferred_loading()
-        self.query = self.query.clone(klass=DateQuery, setup=True)
-        self.query.select = []
-        self.query.add_date_select(self._field_name, self._kind, self._order)
-
-    def _clone(self, klass=None, setup=False, **kwargs):
-        c = super(NodeDateQuerySet, self)._clone(klass, False, **kwargs)
-        c._field_name = self._field_name
-        c._kind = self._kind
-        if setup and hasattr(c, '_setup_query'):
-            c._setup_query()
-        return c
