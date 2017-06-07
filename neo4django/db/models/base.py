@@ -400,7 +400,7 @@ class NodeModel(NeoModel):
         error_message = 'The type node for class %s could not be created in the database.' % name
         try:
             script_rv = conn.gremlin_tx(script, types=type_hier_props)
-        except Exception, e:
+        except Exception as e:
             raise RuntimeError(error_message, e)
         if not hasattr(script_rv, 'properties'):
             raise RuntimeError(error_message + '\n\n%s' % script_rv)
