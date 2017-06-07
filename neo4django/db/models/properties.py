@@ -729,7 +729,7 @@ class ArrayProperty(Property):
 
     default_validators = [validate_array]
 
-    member_to_neo_index = Property.to_neo_index.im_func
+    member_to_neo_index = Property.to_neo_index.__func__
 
     def __init__(self, *args, **kwargs):
         """
